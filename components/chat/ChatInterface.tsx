@@ -109,10 +109,10 @@ export default function ChatInterface() {
           </div>
 
           <div className="relative h-full flex flex-col items-center justify-center px-6 text-center">
-            <h1 className="text-5xl md:text-7xl font-light tracking-tight text-white mb-4">
+            <h1 className="text-6xl md:text-8xl font-semibold tracking-tight text-white mb-6 hero-text-shadow">
               The Scent
             </h1>
-            <p className="text-lg md:text-xl text-white/80 font-light max-w-2xl">
+            <p className="text-xl md:text-2xl text-white font-normal max-w-2xl hero-text-shadow">
               Discover your signature fragrance through conversation
             </p>
           </div>
