@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { TrendingDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import FragranceCard from './FragranceCard';
 import { Fragrance } from '@/lib/data/types';
 import { SimilarFragrance } from '@/lib/utils/similarity';
@@ -45,43 +45,40 @@ export default function SimilarCheaper({ targetFragrance }: SimilarCheaperProps)
     return (
       <button
         onClick={() => setIsExpanded(true)}
-        className="w-full mt-2 py-2 px-4 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg transition-colors flex items-center justify-center gap-2 text-green-700 font-medium text-sm"
+        className="w-full py-2 px-4 bg-neutral-100 hover:bg-neutral-200 transition-colors flex items-center justify-between text-neutral-800 text-xs font-light uppercase tracking-wide"
       >
-        <TrendingDown className="w-4 h-4" />
-        <span>Show Similar but Cheaper Options</span>
+        <span>Similar but cheaper</span>
+        <ChevronDown className="w-3.5 h-3.5" />
       </button>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 sm:p-6 mt-4">
-      <div className="flex items-center gap-2 mb-4">
-        <TrendingDown className="w-5 h-5 text-green-600" />
-        <h3 className="font-semibold text-neutral-900">
-          Save Money: Similar Fragrances
-        </h3>
-      </div>
+    <div className="bg-neutral-50 border border-neutral-200 p-6 mt-2">
+      <h3 className="text-xs font-normal text-neutral-500 uppercase tracking-wide mb-4">
+        Similar but cheaper
+      </h3>
 
       {isLoading ? (
-        <div className="text-center py-8 text-neutral-600">
-          <p className="text-sm">Finding similar options...</p>
+        <div className="text-center py-8 text-neutral-500">
+          <p className="text-xs font-light">Finding alternatives...</p>
         </div>
       ) : alternatives.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {alternatives.map((alt, i) => (
-            <div key={i} className="relative">
-              <FragranceCard fragrance={alt.fragrance} />
+            <div key={i}>
+              <FragranceCard fragrance={alt.fragrance} showSimilarCheaper={false} />
               <div className="mt-2 text-center">
-                <span className="inline-block px-3 py-1 bg-green-600 text-white text-xs font-medium rounded-full">
-                  {Math.round(alt.similarity * 100)}% similar
+                <span className="inline-block px-3 py-1 bg-neutral-900 text-white text-xs font-light">
+                  {Math.round(alt.similarity * 100)}% match
                 </span>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-8 text-neutral-600">
-          <p className="text-sm">No cheaper alternatives found with similar profiles.</p>
+        <div className="text-center py-8 text-neutral-500">
+          <p className="text-xs font-light">No cheaper alternatives found.</p>
         </div>
       )}
     </div>

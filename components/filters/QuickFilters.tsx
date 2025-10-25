@@ -1,21 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { Briefcase, Heart, Coffee, Dumbbell, Sparkles } from 'lucide-react';
 import { FilterOptions } from '@/lib/data/types';
 
 const OCCASIONS = [
-  { id: 'office', label: 'Office', icon: Briefcase },
-  { id: 'date', label: 'Date Night', icon: Heart },
-  { id: 'casual', label: 'Everyday', icon: Coffee },
-  { id: 'gym', label: 'Gym/Sports', icon: Dumbbell },
-  { id: 'formal', label: 'Formal', icon: Sparkles },
+  { id: 'office', label: 'Office' },
+  { id: 'date', label: 'Date Night' },
+  { id: 'casual', label: 'Casual' },
+  { id: 'gym', label: 'Sport' },
+  { id: 'formal', label: 'Formal' },
 ];
 
 const PRICE_TIERS = [
-  { id: 'budget', label: 'Budget', range: '<$40' },
-  { id: 'mid', label: 'Mid-Range', range: '$40-100' },
-  { id: 'premium', label: 'Premium', range: '$100+' },
+  { id: 'budget', label: 'Under $40' },
+  { id: 'mid', label: '$40–100' },
+  { id: 'premium', label: '$100+' },
 ];
 
 interface QuickFiltersProps {
@@ -45,59 +44,54 @@ export default function QuickFilters({ onFilterChange }: QuickFiltersProps) {
   };
 
   return (
-    <div className="bg-white border-b border-neutral-200 px-4 sm:px-6 py-4">
-      <div className="max-w-4xl mx-auto space-y-4">
-        {/* Occasions */}
-        <div>
-          <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">
-            I need this for...
-          </p>
-          <div className="flex gap-2 flex-wrap">
-            {OCCASIONS.map((occasion) => {
-              const Icon = occasion.icon;
-              const isSelected = selectedOccasion === occasion.id;
-              return (
-                <button
-                  key={occasion.id}
-                  onClick={() => handleOccasionClick(occasion.id)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-full border-2 transition-all text-sm font-medium ${
-                    isSelected
-                      ? 'bg-amber-600 border-amber-600 text-white shadow-md'
-                      : 'bg-white border-neutral-300 text-neutral-700 hover:border-amber-500 hover:text-amber-600'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{occasion.label}</span>
-                </button>
-              );
-            })}
-          </div>
+    <div className="bg-neutral-50 border border-neutral-200 p-6 space-y-6">
+      {/* Occasions */}
+      <div>
+        <p className="text-xs font-normal text-neutral-500 uppercase tracking-wide mb-3">
+          Occasion
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {OCCASIONS.map((occasion) => {
+            const isSelected = selectedOccasion === occasion.id;
+            return (
+              <button
+                key={occasion.id}
+                onClick={() => handleOccasionClick(occasion.id)}
+                className={`px-4 py-2 text-xs font-light uppercase tracking-wide transition-all ${
+                  isSelected
+                    ? 'bg-black text-white'
+                    : 'bg-white border border-neutral-300 text-neutral-700 hover:border-neutral-900'
+                }`}
+              >
+                {occasion.label}
+              </button>
+            );
+          })}
         </div>
+      </div>
 
-        {/* Price */}
-        <div>
-          <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">
-            My budget
-          </p>
-          <div className="flex gap-2 flex-wrap">
-            {PRICE_TIERS.map((tier) => {
-              const isSelected = selectedPrice === tier.id;
-              return (
-                <button
-                  key={tier.id}
-                  onClick={() => handlePriceClick(tier.id)}
-                  className={`px-4 py-2 rounded-full border-2 transition-all ${
-                    isSelected
-                      ? 'bg-amber-600 border-amber-600 text-white shadow-md'
-                      : 'bg-white border-neutral-300 text-neutral-700 hover:border-amber-500 hover:text-amber-600'
-                  }`}
-                >
-                  <span className="text-sm font-medium">{tier.label}</span>
-                  <span className="text-xs ml-1 opacity-75">({tier.range})</span>
-                </button>
-              );
-            })}
-          </div>
+      {/* Price */}
+      <div>
+        <p className="text-xs font-normal text-neutral-500 uppercase tracking-wide mb-3">
+          Budget
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {PRICE_TIERS.map((tier) => {
+            const isSelected = selectedPrice === tier.id;
+            return (
+              <button
+                key={tier.id}
+                onClick={() => handlePriceClick(tier.id)}
+                className={`px-4 py-2 text-xs font-light uppercase tracking-wide transition-all ${
+                  isSelected
+                    ? 'bg-black text-white'
+                    : 'bg-white border border-neutral-300 text-neutral-700 hover:border-neutral-900'
+                }`}
+              >
+                {tier.label}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, Loader2 } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 import FragranceCard from '../fragrance/FragranceCard';
 import QuickFilters from '../filters/QuickFilters';
 import { Fragrance, FilterOptions } from '@/lib/data/types';
+import Image from 'next/image';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -16,13 +17,14 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hey! I'm here to help you find your perfect scent. Are you looking for something for a specific occasion, or just exploring?"
+      content: "Welcome. I'm here to help you discover your signature scent. What occasion are you shopping for?"
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId] = useState(() => Math.random().toString(36).substring(7));
   const [filters, setFilters] = useState<FilterOptions>({});
+  const [showHero, setShowHero] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -32,6 +34,12 @@ export default function ChatInterface() {
 
   useEffect(() => {
     scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    if (messages.length > 1) {
+      setShowHero(false);
+    }
   }, [messages]);
 
   const sendMessage = async () => {
@@ -68,7 +76,7 @@ export default function ChatInterface() {
       console.error('Error:', error);
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'Sorry, something went wrong. Can you try again?'
+        content: 'My apologies. Could you try that again?'
       }]);
     } finally {
       setIsLoading(false);
@@ -84,85 +92,106 @@ export default function ChatInterface() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-neutral-50">
-      {/* Header */}
-      <header className="bg-white border-b border-neutral-200 px-4 sm:px-6 py-4 shadow-sm">
-        <div className="max-w-4xl mx-auto flex items-center gap-2">
-          <Sparkles className="w-6 h-6 text-amber-600" />
-          <div>
-            <h1 className="text-xl font-bold text-neutral-900">The Scent</h1>
-            <p className="text-xs text-neutral-500">AI Fragrance Discovery</p>
+    <div className="relative min-h-screen bg-white">
+      {/* Hero Section - Only shows initially */}
+      {showHero && (
+        <div className="relative h-[60vh] overflow-hidden">
+          <div className="absolute inset-0">
+            <Image
+              src="/background.jpg"
+              alt="Fragrance background"
+              fill
+              className="object-cover"
+              priority
+              quality={100}
+            />
+            <div className="absolute inset-0 hero-gradient" />
+          </div>
+
+          <div className="relative h-full flex flex-col items-center justify-center px-6 text-center">
+            <h1 className="text-5xl md:text-7xl font-light tracking-tight text-white mb-4">
+              The Scent
+            </h1>
+            <p className="text-lg md:text-xl text-white/80 font-light max-w-2xl">
+              Discover your signature fragrance through conversation
+            </p>
           </div>
         </div>
-      </header>
+      )}
 
-      {/* Filters */}
-      <QuickFilters onFilterChange={setFilters} />
+      {/* Main Chat Container */}
+      <div className={`${showHero ? 'relative -mt-32' : 'pt-24'} px-4 pb-32`}>
+        <div className="max-w-3xl mx-auto">
+          {/* Filters - Only show after hero */}
+          {!showHero && (
+            <div className="mb-8">
+              <QuickFilters onFilterChange={setFilters} />
+            </div>
+          )}
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-6">
-        <div className="max-w-4xl mx-auto">
-          {messages.map((msg, idx) => (
-            <div key={idx} className="mb-6">
-              <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-3 ${
-                  msg.role === 'user'
-                    ? 'bg-amber-600 text-white'
-                    : 'bg-white text-neutral-900 border border-neutral-200 shadow-sm'
-                }`}>
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+          {/* Messages */}
+          <div className="space-y-6">
+            {messages.slice(showHero ? 0 : 1).map((msg, idx) => (
+              <div key={idx} className="space-y-4">
+                <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[85%] ${
+                    msg.role === 'user'
+                      ? 'bg-black text-white px-6 py-4 rounded-2xl'
+                      : 'text-neutral-800'
+                  }`}>
+                    <p className="text-sm md:text-base leading-relaxed font-light">
+                      {msg.content}
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Show recommendations if present */}
-              {msg.recommendations && msg.recommendations.length > 0 && (
-                <div className="mt-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Recommendations */}
+                {msg.recommendations && msg.recommendations.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
                     {msg.recommendations.map((fragrance, i) => (
                       <FragranceCard key={i} fragrance={fragrance} />
                     ))}
                   </div>
-                </div>
-              )}
-            </div>
-          ))}
+                )}
+              </div>
+            ))}
 
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-white border border-neutral-200 rounded-2xl px-4 py-3 shadow-sm">
-                <div className="flex gap-2 items-center">
-                  <Loader2 className="w-4 h-4 text-amber-600 animate-spin" />
-                  <span className="text-sm text-neutral-600">Thinking...</span>
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="flex items-center gap-2 text-neutral-400">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-sm font-light">Thinking...</span>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} />
+          </div>
         </div>
       </div>
 
-      {/* Input */}
-      <div className="bg-white border-t border-neutral-200 px-4 sm:px-6 py-4 shadow-lg">
-        <div className="max-w-4xl mx-auto flex gap-3">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Tell me what you're looking for..."
-            disabled={isLoading}
-            className="flex-1 px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!input.trim() || isLoading}
-            className="px-6 py-3 bg-amber-600 text-white rounded-xl hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors font-medium"
-          >
-            <Send className="w-4 h-4" />
-            <span className="hidden sm:inline">Send</span>
-          </button>
+      {/* Fixed Input Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-heavy border-t border-neutral-200">
+        <div className="max-w-3xl mx-auto px-4 py-6">
+          <div className="flex gap-3 items-center">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Describe what you're looking for..."
+              disabled={isLoading}
+              className="flex-1 px-5 py-3 bg-neutral-50 border border-neutral-200 rounded-full focus:outline-none focus:ring-1 focus:ring-black focus:border-black disabled:opacity-50 disabled:cursor-not-allowed text-sm font-light placeholder:text-neutral-400 transition-all"
+            />
+            <button
+              onClick={sendMessage}
+              disabled={!input.trim() || isLoading}
+              className="p-3 bg-black text-white rounded-full hover:bg-neutral-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all refined-shadow"
+            >
+              <Send className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
